@@ -26,11 +26,6 @@ module.exports = {
             const member = message.mentions.members.first() || message.guild.members.cache.get(arg[0]);
             if (!member) return message.reply(intLang('commands.kick._errors.invalidMember'));
             if (member.id === message.author.id) return message.reply(intLang('commands.kick._errors.selfMember'));
-
-            //! Testing var, should remove at some point.
-            if (member.id === '213310816231882752') return message.reply('why you try to kick a home dog slice shoe?');
-            //! Testing var, should remove at some point.
-
             if (member.hasPermission('ADMINISTRATOR')) return message.reply(intLang('commands.kick._errors.isStaff'));
             if (!message.member.voice.channel.members.some(user => user.id === member.id)) return message.reply(intLang('commands.kick._errors.unknownMember'));
 
