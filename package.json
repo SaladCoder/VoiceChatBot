@@ -1,0 +1,20 @@
+{
+  "name": "voicechatbot",
+  "version": "0.1.0",
+  "description": "🔊 VoiceChatBot is a Discord bot made with the sole purpose of managing Voice Channels.",
+  "main": "./src/voiceChatBot.js",
+  "scripts": {
+    "start": "node ./"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "Original Developer Matthew Williams (mattwillcreative@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^14.14.10",
+    "discord.js": "^12.5.0",
+    "nedb": "^1.8.0",
+    "winston": "^3.3.3"
+  }
+}

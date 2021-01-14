@@ -1,0 +1,17 @@
+{
+	"settings": {
+		"locale": "en"
+	},
+	"discord": {
+		"token": "DISCORD TOKEN HERE",
+		"prefix": "$",
+		"embedColor": "#38FEDC"
+	},
+	"dumpChannel": {
+		"channelID": ""
+	},
+	"channelTemplate": {
+		"lockStatus": false,
+		"channelSlots": 10
+	}
+}
