@@ -7,6 +7,8 @@ Too many channels in your community for your members to join? VoiceChatBot elimi
 
 When you setup your bot for the first time, your community can join a permanent voice channel that allows them to generate a new voice channel, this then allows them to manage it using various commands. The voice channel will be automatically deleted once all members have left said channel.
 
+This bot was originally a forked project from: [@Mattizhu](https://github.com/mattizhu/voicechatbot)
+
 ## 🔐 Bot Permissions
 The Discord bot requires certain global permissions in your server to be able to work properly:
 
@@ -100,4 +102,4 @@ Github: [@CustomRL](https://github.com/CustomRL)
 Discord: [Custom#5684](https://discord.com/users/282560443262959617)
 
 ## 📑 MIT Licensing
-MIT License. Copyright (c) 2012-2020, Matthew Williams
+MIT License. Copyright (c) 2012-2020, Matthew Williams, Alex Mercer
