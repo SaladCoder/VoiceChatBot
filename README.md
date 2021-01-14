@@ -100,4 +100,4 @@ Github: [@CustomRL](https://github.com/CustomRL)
 Discord: [Custom#5684](https://discord.com/users/282560443262959617)
 
 ## 📑 MIT Licensing
-MIT License. Copyright (c) 2012-2020, Matthew Williams
+MIT License. Copyright (c) 2012-2020, Matthew Williams, Alex Mercer
