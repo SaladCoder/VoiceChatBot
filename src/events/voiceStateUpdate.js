@@ -7,6 +7,10 @@ const fs = require('fs');
 // Event Emitting
 module.exports = (client, oldState, newState) => {
 
+    // Connection logs for dumpEvent [If opt-in for]
+    if (oldState.channelID === null && newState.channelID !== null) dumpEvent.dumpJoinAndLeave(client, newState, 'green', 'Connect');
+    if (oldState.channelID !== null && newState.channelID === null) dumpEvent.dumpJoinAndLeave(client, oldState, 'red', 'Disconnect');
+
     // Voice Channel Creation Function
     function createVoiceChannel(Guild) {
         const guild = newState.guild;

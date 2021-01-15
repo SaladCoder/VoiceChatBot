@@ -7,7 +7,7 @@
  * 
  * The MIT License (MIT)
  * 
- * Copyright (c) 2020, Matthew Williams
+ * Copyright (c) 2020, Matthew Williams, Alex Mercer
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -30,17 +30,10 @@ const {Client, Collection} = require('discord.js');
 const client = new Client();
 const fs = require('fs');
 const {discord} = require('./config/config');
-const {dumpEvent} = require('./utilities/dumpEvent');
 
 // Discord Native Collections
 client.commands = new Collection();
 client.cooldowns = new Collection();
-
-// Connection logs for dumpEvent [If opt-in for]
-client.on('voiceStateUpdate', (oldMember, newMember) => {
-    if (oldMember.channelID === null && newMember.channelID !== null) dumpEvent.dumpJoinAndLeave(client, newMember, 'green', 'Connect');
-    if (oldMember.channelID !== null && newMember.channelID === null) dumpEvent.dumpJoinAndLeave(client, oldMember, 'red', 'Disconnect');
-});
 
 // Discord Dynamic API Events Collection
 const events = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
