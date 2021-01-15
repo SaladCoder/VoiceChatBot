@@ -17,8 +17,8 @@ module.exports = {
     execute(client, message, arg) {
 
         // Member and Role Mention Verification
-        const member = message.mentions.members.first() || message.guild.members.cache.get(arg[0]);
-        const role = message.mentions.roles.first() || message.guild.roles.cache.get(arg[0]);
+        const member = message.mentions.members.first() || message.guild.members.cache.get(arg[1]);
+        const role = message.mentions.roles.first() || message.guild.roles.cache.get(arg[1]);
         if (!message.member.hasPermission('ADMINISTRATOR')) return message.reply(intLang('commands.manager._errors.invalidPermissions'));
         if (!member && !role) return message.reply(intLang('commands.manager._errors.invalidMemberOrRole'));
         

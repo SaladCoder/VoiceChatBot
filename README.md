@@ -25,6 +25,10 @@ The Discord bot requires certain global permissions in your server to be able to
 - Connect
 - Move Members
 
+This bot also accepts Discord ID's as well as @Mentions when calling certain commands; To take full advantage of this feature of the bot, please enable `PRESENCE INTENT` and `SERVER MEMBERS INTENT`. This will allow the bot to collect Cache for guild members.
+
+<img src="image.png" alt="DiscordImage" width="1000" height="267">
+
 ## 📡 Command List
 
 ### Administrator Commands
