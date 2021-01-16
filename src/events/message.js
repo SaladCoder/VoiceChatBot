@@ -39,59 +39,59 @@ module.exports = (client, message) => {
         // Check if user is an ADMINISTRATOR of the server, otherwise, we proceed with checks
         if (message.member.hasPermission('ADMINISTRATOR')) overRide = true;
 
-            // Query for manager and staff that match the discord member
-            dbStaffRoles.find({ $or: [{staff: message.member.id}, {manager: message.member.id}] }, async (error, result) => {
-                if (error) return logger.error(intLang('nedb._errors.staffRolesFindIneffective', error)+ ' [0094]');
+        // Query for manager and staff that match the discord member
+        dbStaffRoles.find({ $or: [{staff: message.member.id}, {manager: message.member.id}] }, async (error, result) => {
+            if (error) return logger.error(intLang('nedb._errors.staffRolesFindIneffective', error)+ ' [0094]');
 
-                // If result for manager or staff come back with a match, we set our appropriate variable
-                if (result.length !== 0) {
-                    if (result[0].manager === message.member.id) isManager = true;
-                    if (result[0].staff === message.member.id) isStaff = true;
-                };
+            // If result for manager or staff come back with a match, we set our appropriate variable
+            if (result.length !== 0) {
+                if (result[0].manager === message.member.id) isManager = true;
+                if (result[0].staff === message.member.id) isStaff = true;
+            };
 
-                // Command Permission Verification
-                if (command.adminOnly && !overRide) return message.reply(intLang('events.message._errors.adminPermissionInsufficient'))
-                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0125]'));
-                if (command.managerOnly && !overRide && !isManager) return message.reply(intLang('events.message._errors.managerPermissionInsufficient'))
-                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0095]'));
-                if (command.staffOnly && !overRide && !isStaff && !isManager) return message.reply(intLang('events.message._errors.staffPermissionInsufficient'))
-                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0096]'));
+            // Command Permission Verification
+            if (command.adminOnly && !overRide) return message.reply(intLang('events.message._errors.adminPermissionInsufficient'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0125]'));
+            if (command.managerOnly && !overRide && !isManager) return message.reply(intLang('events.message._errors.managerPermissionInsufficient'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0095]'));
+            if (command.staffOnly && !overRide && !isStaff && !isManager) return message.reply(intLang('events.message._errors.staffPermissionInsufficient'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0096]'));
 
-                    // Command Disabled Verification
-                    dbDisabledCommand.find({commandDisabled: commandName}, (error, result) => {
-                        if (error) return logger.error(intLang('nedb._errors.DisableOrEnableFindIneffective', error)+ ' [0097]');
-                        if (result.length !== 0 && !overRide && !isManager) return message.reply(intLang('events.message._errors.commandDisabled'))
-                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0098]'));
+            // Command Disabled Verification
+            dbDisabledCommand.find({commandDisabled: commandName}, (error, result) => {
+                if (error) return logger.error(intLang('nedb._errors.DisableOrEnableFindIneffective', error)+ ' [0097]');
+                if (result.length !== 0 && !overRide && !isManager) return message.reply(intLang('events.message._errors.commandDisabled'))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0098]'));
 
-                    // Command Arguments Verification
-                    if (command.arguments && !args.length) return message.reply(intLang('events.message._errors.argumentsRequired', discord.prefix))
-                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0099]'));
+                // Command Arguments Verification
+                if (command.arguments && !args.length) return message.reply(intLang('events.message._errors.argumentsRequired', discord.prefix))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0099]'));
 
-                    // Command Cooldown Verification
-                    if (!client.cooldowns.has(command.name)) client.cooldowns.set(command.name, new Collection());
-                    const now = Date.now();
-                    const cooldown = client.cooldowns.get(command.name);
-                    const cooldownTime = (command.cooldown || 3) * 1000;
-                    if (cooldown.has(message.author.id)) {
-                        const expiration = cooldown.get(message.author.id) + cooldownTime;
-                        if (now < expiration) {
-                            const remaining = (expiration - now) / 1000;
-                            return message.reply(intLang('events.message._errors.cooldownInsufficient', Math.ceil(remaining)))
-                                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0100]'));
-                        }
+                // Command Cooldown Verification
+                if (!client.cooldowns.has(command.name)) client.cooldowns.set(command.name, new Collection());
+                const now = Date.now();
+                const cooldown = client.cooldowns.get(command.name);
+                const cooldownTime = (command.cooldown || 3) * 1000;
+                if (cooldown.has(message.author.id)) {
+                    const expiration = cooldown.get(message.author.id) + cooldownTime;
+                    if (now < expiration) {
+                        const remaining = (expiration - now) / 1000;
+                        return message.reply(intLang('events.message._errors.cooldownInsufficient', Math.ceil(remaining)))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0100]'));
                     }
-                    cooldown.set(message.author.id, now);
-                    setTimeout(() => cooldown.delete(message.author.id), cooldownTime);
+                }
+                cooldown.set(message.author.id, now);
+                setTimeout(() => cooldown.delete(message.author.id), cooldownTime);
 
-                    // Command Execution
-                    try {
-                        command.execute(client, message, args);
-                    } catch(error) {
-                        logger.error(intLang('commands._errors.executionIneffective', command.name, error)+ ' [0101]');
-                        message.reply(intLang('events.message._errors.executionIneffective'))
-                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0102]'));
-                    }
-                });
+                // Command Execution
+                try {
+                    command.execute(client, message, args);
+                } catch(error) {
+                    logger.error(intLang('commands._errors.executionIneffective', command.name, error)+ ' [0101]');
+                    message.reply(intLang('events.message._errors.executionIneffective'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0102]'));
+                }
             });
+        });
     });
 };
