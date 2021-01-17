@@ -162,12 +162,12 @@ module.exports = {
 
             // Error Message
             if (errorMessage) message.channel.send(intLang(`commands.setup.manual.${section}._errors.${errorMessage}`, message.author))
-                .then(() => responseMessage => awaitManualSetupMessages(section, responseMessage))
+                .then(responseMessage => awaitManualSetupMessages(section, responseMessage))
                 .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0074]'));
 
             // Section Message
             else messageEmbedSend(client, message.channel, false, intLang(`commands.setup.manual.${section}.embedMessage.title`), intLang(`commands.setup.manual.${section}.embedMessage.description`))
-                .then(() => responseMessage => awaitManualSetupMessages(section, responseMessage));
+                .then(responseMessage => awaitManualSetupMessages(section, responseMessage));
         };
 
         // Manual Setup Await Messages Function
