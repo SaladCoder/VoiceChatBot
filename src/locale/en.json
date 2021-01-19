@@ -411,6 +411,9 @@
             },
             "success": "%s successfully listening to %s users!"
         },
+        "channelDelete": {
+            "unableToWriteFile": "Unable to write file, error: %s"
+        },
         "voiceStateUpdate": {
             "channelVoiceReason": "%s created a voice channel"
         }
