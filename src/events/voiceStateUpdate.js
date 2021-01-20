@@ -59,7 +59,7 @@ module.exports = (client, oldState, newState) => {
             member.voice.setChannel(channelVoice)
                 .catch(() =>  {
                     logger.info(intLang('discord._errors.channelMoveIneffective', member.id)+ ' [0108]');
-                    channelVoice.delete();
+                    deleteVoiceChannel(VoiceChannel);
                 });
 
             // Log our new channel creation to the Dump channel [If opt-in for].
@@ -78,7 +78,7 @@ module.exports = (client, oldState, newState) => {
         const channel = oldState.channel;
 
         // Voice Channel Verification
-        if (channel.parent == null || channel.parent.id !== Guild.channels.category || channel.id === Guild.channels.voice) return;
+        if (channel === null || channel.parent === null || channel.parent.id !== Guild.channels.category || channel.id === Guild.channels.voice) return;
         if (channel.members.array().length) return;
 
         // NeDB VoiceChannels Removal
