@@ -34,6 +34,7 @@ const {discord} = require('./config/config');
 // Discord Native Collections
 client.commands = new Collection();
 client.cooldowns = new Collection();
+client.voiceSlowDown = new Collection();
 
 // Discord Dynamic API Events Collection
 const events = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));

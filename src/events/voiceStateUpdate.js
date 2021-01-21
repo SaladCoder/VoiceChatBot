@@ -1,4 +1,5 @@
 const {dbGuilds, dbVoiceChannels} = require('../utilities/datastore');
+const {Collection} = require('discord.js');
 const {dumpEvent} = require('../utilities/dumpEvent');
 const logger = require('../config/logger');
 const intLang = require('../locale/language');
@@ -12,20 +13,20 @@ module.exports = (client, oldState, newState) => {
     if (oldState.channelID !== null && newState.channelID === null) dumpEvent.dumpJoinAndLeave(client, oldState, 'red', 'Disconnect');
 
     // Voice Channel Creation Function
-    function createVoiceChannel(Guild) {
+    async function createVoiceChannel(Guild) {
         const guild = newState.guild;
         const channelCategory = guild.channels.cache.get(Guild.channels.category);
         const member = newState.member;
-
+        
         // NeDB VoiceChannels Query & Verification
         dbVoiceChannels.findOne({guild: newState.guild.id, channelOwner: member.id}, async (error, VoiceChannel) => {
             if (error) return logger.error(intLang('nedb._errors.voiceChannelsFindOneIneffective', error)+ ' [0104]');
-
+            
             // If a user has a registered channel in our DB, we do our checks.
             if (VoiceChannel) {
 
                 // Gather a check if we have a match from channels on our Discord to our NeDB
-                const isVoiceChannel = guild.channels.cache.find(voice => VoiceChannel.id === voice.id);
+                isVoiceChannel = await guild.channels.cache.find(voice => VoiceChannel.id === voice.id);
 
                 // Remove the matching Voice channel from our NeDB so our Member can create a new channel and give ownership of the old channel
                 dbVoiceChannels.remove({id: isVoiceChannel.id, guild: guild.id}, {}, error => {
@@ -39,37 +40,58 @@ module.exports = (client, oldState, newState) => {
                     // If all checks are valid then we can remove the old channel and log it
                     isVoiceChannel.delete()
 
-                        // Log our channel removed to the Dump channel [If opt-in for].
-                        .then(dumpEvent.dumpChannel(client, oldState, 'red', 'Channel Removed', 'Last person to leave'))
+                        // Log our channel removed to the Dump channel [If opt-in for]
+                        .then(dumpEvent.dumpChannel(client, oldState, 'red', 'Channel Removed', 'Empty'))
                         .catch(() => logger.info(intLang('discord._errors.channelDeleteIneffective', member.voice.channel.id)+ ' [0106]'));
                 });
             };
-
-            // Grab our config file for channel creation
-            const configFile = JSON.parse(fs.readFileSync(`${__dirname}/../config/config.json`, 'utf8'));
-
-            // Voice Channel Creation
-            const channelVoice = await guild.channels.create(intLang('discord.channels.voiceUser', member.user.username), {type: 'voice', parent: channelCategory, userLimit: configFile.channelTemplate.channelSlots, reason: intLang('events.voiceStateUpdate.channelVoiceReason', member.user.tag)})
-                .catch(() => logger.error(intLang('discord._errors.channelCreateIneffective', member.voice.channel.id)+ ' [0107]'));
-
-            // Set a lock on the channel if true is set in the config
-            if (configFile.channelTemplate.lockStatus === 'true') channelVoice.updateOverwrite(guild.roles.everyone.id, {CONNECT: false});
             
-            // Member Voice Channel Movement
-            member.voice.setChannel(channelVoice)
-                .catch(() =>  {
-                    logger.info(intLang('discord._errors.channelMoveIneffective', member.id)+ ' [0108]');
-                    deleteVoiceChannel(VoiceChannel);
-                });
+            // Waits 0.500 seconds and checks if the user is still waiting for a voice channel
+            setTimeout(async () => {
 
-            // Log our new channel creation to the Dump channel [If opt-in for].
-            dumpEvent.dumpChannel(client, newState, 'green', 'Channel Creation');
+                // voiceSlowDown for voice channel creations
+                if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) return;
+                else {
 
-            // NeDB VoiceChannels Insertion
-            dbVoiceChannels.insert({id: channelVoice.id, guild: guild.id, channelOwner: member.id}, error => {
-                if (error) return logger.error(intLang('nedb._errors.voiceChannelsInsertIneffective', error)+ ' [0109]');
-            });
-        })
+                    // voiceSlowDown add if member doesn't have one.
+                    await client.voiceSlowDown.delete(newState.member.id);
+                    await client.voiceSlowDown.set(newState.member.id, Date.now() + 15000); // 15 Seconds voicesSlowDown from voice creation
+
+                    dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
+                        if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0128]');
+
+                        // Checks if the member is in the "Join to Create Channel"
+                        waitMember = await guild.channels.cache.find(voice => Guild.channels.voice === voice.id).members.find(waitMember => waitMember.id === member.id);
+                        if (!waitMember) return;
+
+                        // Grab our config file for channel creation
+                        const configFile = JSON.parse(fs.readFileSync(`${__dirname}/../config/config.json`, 'utf8'));
+
+                        // Voice Channel Creation
+                        const channelVoice = await guild.channels.create(intLang('discord.channels.voiceUser', member.user.username), {type: 'voice', parent: channelCategory, userLimit: configFile.channelTemplate.channelSlots, reason: intLang('events.voiceStateUpdate.channelVoiceReason', member.user.tag)})
+                            .catch(() => logger.error(intLang('discord._errors.channelCreateIneffective', member.voice.channel.id)+ ' [0107]'));
+
+                        // Set a lock on the channel if true is set in the config
+                        if (configFile.channelTemplate.lockStatus === 'true') channelVoice.updateOverwrite(guild.roles.everyone.id, {CONNECT: false});
+                        
+                        // Member Voice Channel Movement
+                        member.voice.setChannel(channelVoice)
+                            .catch(() =>  {
+                                logger.info(intLang('discord._errors.channelMoveIneffective', member.id)+ ' [0108]');
+                                channelVoice.delete();
+                            });
+
+                        // Log our new channel creation to the Dump channel [If opt-in for]
+                        dumpEvent.dumpChannel(client, newState, 'green', 'Channel Creation');
+
+                        // NeDB VoiceChannels Insertion
+                        dbVoiceChannels.insert({id: channelVoice.id, guild: guild.id, channelOwner: member.id}, error => {
+                            if (error) return logger.error(intLang('nedb._errors.voiceChannelsInsertIneffective', error)+ ' [0109]');
+                        });
+                    });
+                }
+            }, 500);
+        });
     };
 
     // Voice Channel Deletion Function
@@ -90,23 +112,23 @@ module.exports = (client, oldState, newState) => {
 
                 // Log our channel removed to the Dump channel [If opt-in for].
                 .then(() => dumpEvent.dumpChannel(client, oldState, 'red', 'Channel Removed', 'Empty'))
-                .catch(() => logger.error(intLang('discord._errors.channelDeleteIneffective', oldState.channelID)+ ' [0111]'));
+                .catch(() => logger.info(intLang('discord._errors.channelDeleteIneffective', oldState.channelID)+ ' [0111]'));
         });
     };
 
     // NeDB Guilds Query & Verification
-    dbGuilds.findOne({id: newState.guild.id}, (error, Guild) => {
+    dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
         if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0112]');
         if (!Guild) return;
 
         // Member joins "Create a channel" Voice Channel
         if (newState.channelID === Guild.channels.voice) {
-            createVoiceChannel(Guild);
+            return createVoiceChannel(Guild);
         }
 
         // Member leaves Voice Channel
         if (oldState.channelID) {
-            deleteVoiceChannel(Guild);
+            return deleteVoiceChannel(Guild);
         }
     });
 };

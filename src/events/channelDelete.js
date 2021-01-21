@@ -21,12 +21,12 @@ module.exports = (client, channel) => {
     }
 
     // Remove the channel as a command channel if the channel was removed
-    dbGuilds.remove({extraCommandChannel: channel.id}, { multi: true }, error => {
+    dbGuilds.remove({ extraCommandChannel: channel.id }, { multi: true }, error => {
         if (error) return logger.error(intLang('nedb._errors.setCommandChannelRemoveIneffective', error)+ ' [0127]');
     });
 
     // NeDB VoiceChannels Removal
-    dbVoiceChannels.remove({id: channel.id}, {}, error => {
+    dbVoiceChannels.remove({ id: channel.id }, {}, error => {
         if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0089]');
     });
 };
