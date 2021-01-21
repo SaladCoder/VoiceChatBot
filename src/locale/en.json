@@ -382,7 +382,8 @@
             "findOwnBotIDWritten": "Bot ID has already been written to config, graceful exit",
             "findOwnBotIDWriteIneffective": "Config was unable able to be written too, check file system permissions",
             "messageIneffective": "Unable to send message in channel: %s",
-            "messageReactIneffective": "Unable to react to message in channel: %s"
+            "messageReactIneffective": "Unable to react to message in channel: %s",
+            "directMessageIneffective": "Unable to Direct Message member: %s"
         },
         "channels": {
             "category": "Voice Channel Creation",
@@ -415,7 +416,11 @@
             "unableToWriteFile": "Unable to write file, error: %s"
         },
         "voiceStateUpdate": {
-            "channelVoiceReason": "%s created a voice channel"
+            "channelVoiceReason": "%s created a voice channel",
+            "embedNewMemberMessage": {
+                "title": "Hello! I'm excited to see you're using our new Voice Channel System!",
+                "description": "Keep in mind that this system is in an beta state, and if you run into any issues, please message a member of staff on the server.\n\n**What is this?**\n**-** Use this system to automatically create your own voice channel - the system will also move you into said voice channel.\n**-** If you don't want to create a voice channel and just want to join a game, feel free to just go and join other member created voice channels. Have fun!\n\n**How to manage a channel**\nBy default, you are only allowed to type commands in the provided #commands text channel (This is located directly above the \"Join to Create Channel\")\n\nIn order to kick a member from your channel, use the command:\n\n%skick [@Mention]\n\nFor example: %skick @Huskies\n\nFor further command assistance type: %shelp\n\nAlso keep in mind that there is a 20 second cool-down for creating a voice channel. This is to avoid abuse of the voice system.\n\n*Please note that any commands can be disabled by a member of staff, and they reserve the right to disable any commands and deny access to this system without notice.*"
+            }
         }
     },
     "nedb": {

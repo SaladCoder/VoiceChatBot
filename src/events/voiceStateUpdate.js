@@ -1,6 +1,7 @@
-const {dbGuilds, dbVoiceChannels} = require('../utilities/datastore');
-const {Collection} = require('discord.js');
+const {dbGuilds, dbVoiceChannels, dbNewMemberHelp} = require('../utilities/datastore');
+const {messageEmbedSend} = require('../utilities/utilities');
 const {dumpEvent} = require('../utilities/dumpEvent');
+const {discord} = require('../config/config');
 const logger = require('../config/logger');
 const intLang = require('../locale/language');
 const fs = require('fs');
@@ -15,8 +16,8 @@ module.exports = (client, oldState, newState) => {
     // Voice Channel Creation Function
     async function createVoiceChannel(Guild) {
         const guild = newState.guild;
-        const channelCategory = guild.channels.cache.get(Guild.channels.category);
         const member = newState.member;
+        const channelCategory = guild.channels.cache.get(Guild.channels.category);
         
         // NeDB VoiceChannels Query & Verification
         dbVoiceChannels.findOne({guild: newState.guild.id, channelOwner: member.id}, async (error, VoiceChannel) => {
@@ -55,7 +56,7 @@ module.exports = (client, oldState, newState) => {
 
                     // voiceSlowDown add if member doesn't have one.
                     await client.voiceSlowDown.delete(newState.member.id);
-                    await client.voiceSlowDown.set(newState.member.id, Date.now() + 15000); // 15 Seconds voicesSlowDown from voice creation
+                    await client.voiceSlowDown.set(newState.member.id, Date.now() + 20000); // 20 Seconds voicesSlowDown from voice creation
 
                     dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
                         if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0128]');
@@ -116,6 +117,17 @@ module.exports = (client, oldState, newState) => {
         });
     };
 
+    function newMemberHelp() {
+        dbNewMemberHelp.findOne({ memberID: newState.member.id }, (error, result) => {
+            if (error) return;
+            if (result) return;
+            dbNewMemberHelp.insert({ memberID: newState.member.id }, error => {
+                if (error) return;
+                messageEmbedSend(client, null, true, intLang('events.voiceStateUpdate.embedNewMemberMessage.title'), intLang('events.voiceStateUpdate.embedNewMemberMessage.description', discord.prefix, discord.prefix, discord.prefix), null, newState.member);
+            });
+        });
+    }
+
     // NeDB Guilds Query & Verification
     dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
         if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0112]');
@@ -123,6 +135,7 @@ module.exports = (client, oldState, newState) => {
 
         // Member joins "Create a channel" Voice Channel
         if (newState.channelID === Guild.channels.voice) {
+            newMemberHelp();
             return createVoiceChannel(Guild);
         }
 

@@ -4,6 +4,7 @@ const Datastore = require('nedb');
 const dbGuilds = new Datastore({filename: './data/guilds.db', autoload: true});
 const dbVoiceChannels = new Datastore({filename: './data/voiceChannels.db', autoload: true});
 const dbStaffRoles = new Datastore({filename: './data/staffRoles.db', autoload: true});
+const dbNewMemberHelp = new Datastore({filename: './data/dbNewMemberHelp.db', autoload: true});
 const dbDisabledCommand = new Datastore({filename: './data/disabledCommand.db', autoload: true});
 
 // Auto compactions of dbVoiceChannels Database file, every 10 Mins
@@ -120,6 +121,20 @@ module.exports = {
         // NeDB Command Disabled or Enabled Removal Query
         remove: (query, options, callback) => {
             return dbDisabledCommand.remove(query, options, (error, document) => callback(error, document));
+        }
+    },
+
+    // NeDB New Member Help Query
+    dbNewMemberHelp: {
+
+        // NeDB New Member Help FindOne Query
+        findOne: (query, callback) => {
+            return dbNewMemberHelp.findOne(query, (error, document) => callback(error, document));
+        },
+        
+        // NeDB New Member Help Insertion Query
+        insert: (query, callback) => {
+            return dbNewMemberHelp.insert(query, (error, document) => callback(error, document));
         }
     }
 };
