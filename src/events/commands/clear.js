@@ -29,11 +29,8 @@ module.exports = {
                     channel.fetch()
                         .then(channel => {
                             if (channel.type !== 'voice' || channel.id === Guild.channels.voice || channel.members.array().length) return;
-                                channel.delete(intLang('commands.clear.voiceDelete.deleteChannelReason', message.author.tag), removeCount++)
-
-                                // Increment removeCount for successful channel removal
-                                .then(() => removeCount++)
-                                .catch(error => logger.error(intLang('discord._errors.channelDeleteIneffective', error)+ ' [0008]'));
+                                channel.delete(intLang('commands.clear.voiceDelete.deleteChannelReason', message.author.tag), removeCount++) // Increment removeCount for successful channel removal
+                                    .catch(error => logger.error(intLang('discord._errors.channelDeleteIneffective', error)+ ' [0008]'));
                         }).catch(error => logger.error(intLang('discord._errors.channelFetchIneffective', error)+ ' [0009]'))
                 );
             });
