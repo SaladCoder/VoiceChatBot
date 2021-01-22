@@ -26,12 +26,12 @@ module.exports = (client, oldState, newState) => {
             // If a user has a registered channel in our DB, we do our checks.
             if (VoiceChannel) {
 
-                // Gather a check if we have a match from channels on our Discord to our NeDB
-                isVoiceChannel = await guild.channels.cache.find(voice => VoiceChannel.id === voice.id);
-
                 // Remove the matching Voice channel from our NeDB so our Member can create a new channel and give ownership of the old channel
-                dbVoiceChannels.remove({id: isVoiceChannel.id, guild: guild.id}, {}, error => {
+                dbVoiceChannels.remove({guild: guild.id, channelOwner: member.id}, {}, async error => {
                     if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0105]');
+                    
+                    // Gather a check if we have a match from channels on our Discord to our NeDB
+                    isVoiceChannel = await guild.channels.cache.find(voice => VoiceChannel.id === voice.id);
 
                     // Category and old channel check to make sure we're in the right place and the old channel doesn't have members inside it
                     if (typeof isVoiceChannel === 'undefined') return;
@@ -102,12 +102,12 @@ module.exports = (client, oldState, newState) => {
 
         // Voice Channel Verification
         if (channel === null || channel.parent === null || channel.parent.id !== Guild.channels.category || channel.id === Guild.channels.voice) return;
-        if (channel.members.array().length) return;
 
         // NeDB VoiceChannels Removal
         dbVoiceChannels.remove({id: channel.id, guild: guild.id}, {}, error => {
             if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0110]');
-
+            if (channel.members.array().length) return;
+            
             // Voice Channel Deletion
             channel.delete()
 

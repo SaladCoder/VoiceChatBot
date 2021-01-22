@@ -111,7 +111,7 @@
         },
         "kick": {
             "_errors": {
-                "incorrectChannel": "you must be in your voice channel to be able to kick!",
+                "incorrectChannel": "you must be in an owned voice channel to be able to kick!",
                 "invalidMember": "mention a member in the server to kick!",
                 "isStaff": "Unable to kick this member!",
                 "selfMember": "you cannot kick yourself from your own voice channel!",
@@ -124,7 +124,7 @@
         },
         "lock": {
             "_errors": {
-                "incorrectChannel": "you must be in your voice channel to be able to lock!",
+                "incorrectChannel": "you must be in an owned voice channel to be able to lock!",
                 "unownedChannel": "you don't own this voice channel to be able to lock!",
                 "isLocked": "your channel is already locked, if you're trying to unlock your channel, please use `%sunlock`"
             },
@@ -183,11 +183,11 @@
         },
         "permit": {
             "_errors": {
-                "incorrectChannel": "you must be in a voice channel to be able to permit someone!",
+                "incorrectChannel": "you must be in an owned voice channel to be able to permit someone!",
                 "invalidMember": "mention a member in the server to permit!",
                 "selfMember": "you cannot permit yourself to your own voice channel.",
                 "userPermitted": "this user has already been permitted to your channel!",
-                "unownedChannel": "you don't own this voice channel to be able to kick!",
+                "unownedChannel": "you don't own this voice channel to be able to permit!",
                 "userIsPresent": "member is already in your channel!"
             }
         },
@@ -358,7 +358,7 @@
         },
         "unlock": {
             "_errors": {
-                "incorrectChannel": "you must be in your voice channel to be able to unlock!",
+                "incorrectChannel": "you must be in an owned voice channel to be able to unlock!",
                 "unownedChannel": "you don't own this voice channel to be able to unlock!",
                 "isUnlocked": "your channel is already unlocked, if you're trying to lock your channel, please use `%slock`"
             },
