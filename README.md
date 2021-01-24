@@ -59,6 +59,7 @@ This bot also accepts Discord ID's as well as @Mentions when calling certain com
 | **Find** | `$find <@Mention>` | Find a member in any voice channel and return an invite for that channel. |
 | **Blacklist** | `$blacklist <add/remove> <@Mention>` | Prevents a member from using the system to create channels. |
 | **Ping** | `$ping` | Retrieves the API response times and bot Latency. |
+| **Staff Help** | `$staffhelp` | Shows all Staff commands. |
 
 > **Notice:** Any member who has the administrator global permission can execute any of the above commands.
 

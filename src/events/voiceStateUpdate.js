@@ -119,10 +119,10 @@ module.exports = (client, oldState, newState) => {
 
     function newMemberHelp() {
         dbNewMemberHelp.findOne({ memberID: newState.member.id }, (error, result) => {
-            if (error) return;
+            if (error) return logger.error(intLang('nedb._errors.newMemberHelpFindOneIneffective', error)+ ' [0130]');
             if (result) return;
             dbNewMemberHelp.insert({ memberID: newState.member.id }, error => {
-                if (error) return;
+                if (error) return logger.error(intLang('nedb._errors.newMemberHelpInsertIneffective', error)+ ' [0131]');
                 messageEmbedSend(client, null, true, intLang('events.voiceStateUpdate.embedNewMemberMessage.title'), intLang('events.voiceStateUpdate.embedNewMemberMessage.description', discord.prefix, discord.prefix, discord.prefix), null, newState.member);
             });
         });
