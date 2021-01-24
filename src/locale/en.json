@@ -450,10 +450,7 @@
             "setCommandChannelFindOneIneffective": "Unable to findOne Set Command Channel in NeDB collection: %s",
             "setCommandChannelFindIneffective": "Unable to Find Set Command Channel in NeDB collection: %s",
             "setCommandChannelInsertIneffective": "Unable to Insert Set Command Channel in NeDB collection: %s",
-            "setCommandChannelRemoveIneffective": "Unable to Remove Set Command Channel in NeDB collection: %s",
-
-            "newMemberHelpFindOneIneffective": "Unable to findOne Set Command Channel in NeDB collection: %s",
-            "newMemberHelpInsertIneffective": "Unable to Insert Set Command Channel in NeDB collection: %s"
+            "setCommandChannelRemoveIneffective": "Unable to Remove Set Command Channel in NeDB collection: %s"
         }
     },
     "utilities": {
