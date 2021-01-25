@@ -18,8 +18,11 @@ module.exports = {
 
         // Member and Role Mention Verification
         const member = message.mentions.members.first() || message.guild.members.cache.get(arg[1]);
-        if (typeof member !== 'undefined' && member.id === message.author.id) return message.reply(intLang('commands.blacklistMember._errors.selfMember'));
-        if (!member) return message.reply(intLang('commands.blacklistMember._errors.isBlacklistedMemberGuild'));
+        if (typeof member !== 'undefined' && member.id === message.author.id) return message.reply(intLang('commands.blacklistMember._errors.selfMember'))
+            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0221]'));
+
+        if (!member) return message.reply(intLang('commands.blacklistMember._errors.isBlacklistedMemberGuild'))
+            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0222]'));
 
         switch(arg[0]){
             case 'add':
@@ -29,12 +32,15 @@ module.exports = {
                     const channel = await client.channels.cache.find(channel => channel.id === result.channels.voice);
                     const permissions = channel.permissionOverwrites.get(member.user.id);
 
-                    if (typeof permissions !== 'undefined') return message.reply(intLang('commands.blacklistMember._errors.memberIsAlreadyBlacklist'));
+                    if (typeof permissions !== 'undefined') return message.reply(intLang('commands.blacklistMember._errors.memberIsAlreadyBlacklist'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0223]'));
 
                     channel.updateOverwrite(member.user.id, { CONNECT: false })
                         .then(() => member.voice.kick())
-                        .then(() => message.react('✅')) // Success Response ┬─┬ ノ( ゜-゜ノ)
-                        .then(() => message.reply(intLang('commands.blacklistMember.add.memberHasBlacklist')))
+                        .then(() => message.react('✅') // Success Response ┬─┬ ノ( ゜-゜ノ)
+                            .catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0224]')))
+                        .then(() => message.reply(intLang('commands.blacklistMember.add.memberHasBlacklist'))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0225]')))
                         .then(() => dumpEvent.dumpCommand(client, message, 'black', `${this.name} add`, member))
                         .catch(error => logger.error(intLang('commands.blacklistMember._errors.channelPermissionsIneffective', error))); // Error Handle (╯°□°）╯︵ ┻━┻
                 });
@@ -47,18 +53,22 @@ module.exports = {
                     const channel = await client.channels.cache.find(channel => channel.id === result.channels.voice);
                     const permissions = channel.permissionOverwrites.get(member.user.id);
 
-                    if (typeof permissions === 'undefined') return message.reply(intLang('commands.blacklistMember._errors.memberIsNotBlacklist'));
+                    if (typeof permissions === 'undefined') return message.reply(intLang('commands.blacklistMember._errors.memberIsNotBlacklist'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0226]'));
 
                     permissions.delete()
-                            .then(() => message.react('✅')) // Success Response ┬─┬ ノ( ゜-゜ノ)
-                            .then(() => message.reply(intLang('commands.blacklistMember.remove.memberNoBlacklist')))
+                            .then(() => message.react('✅') // Success Response ┬─┬ ノ( ゜-゜ノ)
+                                .catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0227]')))
+                            .then(() => message.reply(intLang('commands.blacklistMember.remove.memberNoBlacklist'))
+                                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0228]')))
                             .then(() => dumpEvent.dumpCommand(client, message, 'black', `${this.name} remove`, member))
                             .catch(error => logger.error(intLang('commands.blacklistMember._errors.channelRemovePermissionsIneffective', error)+' [0003]')); // Error Handle (╯°□°）╯︵ ┻━┻
                 });
                 break;
 
             default:
-                message.reply(intLang('commands.blacklistMember._errors.incorrectFormat', discord.prefix, discord.prefix));
+                message.reply(intLang('commands.blacklistMember._errors.incorrectFormat', discord.prefix, discord.prefix))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0229]'));
         }
     }
 };

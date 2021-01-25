@@ -36,20 +36,25 @@ module.exports = {
             dump = JSON.parse(dump);
 
             // Error Handle (╯°□°）╯︵ ┻━┻
-            if (!channel && newLogChannel !== 'remove') {
-                return message.reply(intLang('commands.setLogChannel.failed.unableToSetLogChannel'));
-            }else if (newLogChannel === 'remove' && dump.dumpChannel.channelID !== '') {
+            if (!channel && newLogChannel !== 'remove') return message.reply(intLang('commands.setLogChannel.failed.unableToSetLogChannel'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0171]'));
+
+            else if (newLogChannel === 'remove' && dump.dumpChannel.channelID !== '') {
                 dump.dumpChannel.channelID = '';
-                setLogType = 'remove'
-            }else if (newLogChannel === 'remove' && dump.dumpChannel.channelID === '') {
-                return message.reply(intLang('commands.setLogChannel.failed.nothingToRemove'));
-            }else if (dump.dumpChannel.channelID === channel.id) {
-                return message.reply(intLang('commands.setLogChannel.failed.logChannelAlreadyAdded'));
-            }else{
+                setLogType = 'remove';
+            }
+            
+            else if (newLogChannel === 'remove' && dump.dumpChannel.channelID === '') return message.reply(intLang('commands.setLogChannel.failed.nothingToRemove'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0172]'));
+
+            else if (dump.dumpChannel.channelID === channel.id) return message.reply(intLang('commands.setLogChannel.failed.logChannelAlreadyAdded'))
+                .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0173]'));
+
+            else {
 
                 // Finally if all checks are valid, we can pass the new channelID to fs.writeFile
                 dump.dumpChannel.channelID = channel.id;
-                setLogType = 'new'
+                setLogType = 'new';
             }
 
             // Write to file our new Channel ID for the log dumps
@@ -59,10 +64,13 @@ module.exports = {
 
             // Give the appropriate response
             if (setLogType === 'remove') message.react('✅')
-                .then(() => message.reply(intLang('commands.setLogChannel.success.logChannelRemove'))) // Success Response ┬─┬ ノ( ゜-゜ノ)
+                .then(() => message.reply(intLang('commands.setLogChannel.success.logChannelRemove')) // Success Response ┬─┬ ノ( ゜-゜ノ)
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0174]')))
                 .catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0057]')); // Error Handle (╯°□°）╯︵ ┻━┻
+
             if (setLogType === 'new') message.react('✅')
-                .then(() => message.reply(intLang('commands.setLogChannel.success.newLogChannelSet'))) // Success Response ┬─┬ ノ( ゜-゜ノ)
+                .then(() => message.reply(intLang('commands.setLogChannel.success.newLogChannelSet')) // Success Response ┬─┬ ノ( ゜-゜ノ)
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0175]')))
                 .catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0058]')); // Error Handle (╯°□°）╯︵ ┻━┻
         });
     }

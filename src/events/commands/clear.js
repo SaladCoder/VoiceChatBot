@@ -41,8 +41,10 @@ module.exports = {
                 // We check to see if a channel has been removed and take action if it has
                 if(removeCount > 0) {
                     message.react('✅')
-                        .then(() => message.reply(intLang('commands.clear.voiceDelete.deleteChannelCount', removeCount)))
-                        .then(() => dumpEvent.dumpCommand(client, message, 'purple', this.name));
+                        .then(() => message.reply(intLang('commands.clear.voiceDelete.deleteChannelCount', removeCount))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0211]')))
+                        .then(() => dumpEvent.dumpCommand(client, message, 'purple', this.name))
+                        .catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0212]'));
                 }
             }).catch(error => logger.error(intLang('discord._errors.channelRemovePromiseReturnIneffective', error)+ ' [0010]'));
         });

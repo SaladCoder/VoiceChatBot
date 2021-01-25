@@ -49,7 +49,8 @@ module.exports = {
                     if (reaction.emoji.name === manualEmoji) return manualSetup('categoryChannel');
                     if (reaction.emoji.name === repairEmoji && repairOption) return setupRepair();
                     if (reaction.emoji.name === resetEmoji && repairOption) return resetSetup();
-                }).catch(() => message.reply(intLang('commands.setup._errors.reactionUnresponsive')));
+                }).catch(() => message.reply(intLang('commands.setup._errors.reactionUnresponsive')))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0160]'));
         };
 
         // Setup Repair Function
@@ -71,13 +72,15 @@ module.exports = {
                 const voiceChannel = await message.guild.channels.cache.find(voiceChannel => voiceChannel.id === guildResult.channels.voice);
 
                 // Quick check to see if the Repair is needed, return if NOT
-                if (channelCategory && textChannel && voiceChannel && textChannel.parentID === channelCategory.id && voiceChannel.parentID === channelCategory.id) return message.reply(intLang('commands.setup.repair._errors.noRepairApplicable'));
+                if (channelCategory && textChannel && voiceChannel && textChannel.parentID === channelCategory.id && voiceChannel.parentID === channelCategory.id) return message.reply(intLang('commands.setup.repair._errors.noRepairApplicable'))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0161]'));
 
                 // Category Check does exists
                 if (!channelCategory) newChannelCategory = await message.guild.channels.create(intLang('discord.channels.category'), {type: 'category', permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                     .catch(error => {
                         logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0065]');
-                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'));
+                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0162]'));
                     });
                 else newChannelCategory = channelCategory;
                 
@@ -85,7 +88,8 @@ module.exports = {
                 if (!textChannel) newTextChannel = await message.guild.channels.create(intLang('discord.channels.text'), {type: 'text', parent: channelCategory, permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                     .catch(error => {
                         logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0066]');
-                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'));
+                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0163]'));
                     });
                 else newTextChannel = textChannel;
                 
@@ -93,7 +97,8 @@ module.exports = {
                 if (!voiceChannel) newVoiceChannel = await message.guild.channels.create(intLang('discord.channels.voice'), {type: 'voice', parent: channelCategory, permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                     .catch(error => {
                         logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0067]');
-                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'));
+                        return message.reply(intLang('commands.setup.repair._errors.commandIneffective'))
+                            .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0164]'));
                     });
                 else newVoiceChannel = voiceChannel;
                 
@@ -131,21 +136,24 @@ module.exports = {
             const channelCategory = await message.guild.channels.create(intLang('discord.channels.category'), {type: 'category', permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                 .catch(error => {
                     logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0070]');
-                    return message.reply(intLang('commands.setup._errors.commandIneffective'));
+                    return message.reply(intLang('commands.setup._errors.commandIneffective'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0165]'));
                 });
 
             // Category Text Creation
             const channelText = await message.guild.channels.create(intLang('discord.channels.text'), {type: 'text', parent: channelCategory, permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                 .catch(error => {
                     logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0071]');
-                    return message.reply(intLang('commands.setup._errors.commandIneffective'));
+                    return message.reply(intLang('commands.setup._errors.commandIneffective'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0166]'));
                 });
 
             // Category Voice Creation
             const channelVoice = await message.guild.channels.create(intLang('discord.channels.voice'), {type: 'voice', parent: channelCategory, permissionOverwrites: [{id: message.guild.members.cache.get(client.user.id).id, allow: clientPermissions}, {id: message.guild.roles.everyone.id, allow: ['CONNECT', 'SEND_MESSAGES']}]})
                 .catch(error => {
                     logger.error(intLang('discord._errors.channelCreateIneffective', error)+ ' [0072]');
-                    return message.reply(intLang('commands.setup._errors.commandIneffective'));
+                    return message.reply(intLang('commands.setup._errors.commandIneffective'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0167]'));
                 });
 
             // NeDB Guilds Insertion
@@ -178,9 +186,11 @@ module.exports = {
             if (section !== 'permissions') responseMessage.channel.awaitMessages(msg => msg.author.id === message.author.id, {max: 1, time: 600000, errors: ['time']})
                 .then(responses => {
                     const response = responses.first();
-                    if (response.content.toLowerCase() === 'cancel') return message.reply(intLang('commands.setup.manual._errors.processCancelled'));
+                    if (response.content.toLowerCase() === 'cancel') return message.reply(intLang('commands.setup.manual._errors.processCancelled'))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0168]'));
                     return verifyManualSetup(section, response);
-                }).catch(() => message.reply(intLang('commands.setup._errors.responseTimeout')));
+                }).catch(() => message.reply(intLang('commands.setup._errors.responseTimeout')))
+                    .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0169]'));
 
             // Message Reaction Await
             else {
@@ -200,7 +210,8 @@ module.exports = {
                             // Success Response
                             messageEmbedSend(client, message.channel, false, intLang('commands.setup.manual.success.embedMessage.title'), intLang('commands.setup.manual.success.embedMessage.description', discord.prefix));
                         });
-                    }).catch(() => message.reply(intLang('commands.setup._errors.responseTimeout')));
+                    }).catch(() => message.reply(intLang('commands.setup._errors.responseTimeout')))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0170]'));
             }
         };
 

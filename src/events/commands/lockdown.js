@@ -24,24 +24,24 @@ module.exports = {
 
             // Check for Channels permissions are not in a set state, in case someone has been messing with them, I see you >.>
             if (typeof isSetPermissions === 'undefined') return category.updateOverwrite(message.guild.roles.everyone.id, {CONNECT: false, SEND_MESSAGES: false})
-                .then(() => message.react('✅'))
-                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOffline', discord.prefix)))
+                .then(() => message.react('✅').catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0182]')))
+                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOffline', discord.prefix)).catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0183]')))
                 .then(() => messageEmbedSend(client, responseChannel, false, intLang('commands.lockdown.lockdownMessage.embedMessageOffline.title'), intLang('commands.lockdown.lockdownMessage.embedMessageOffline.description')))
                 .then(() => dumpEvent.dumpCommand(client, message, 'black', `${this.name} 'On'`))
                 .catch(() => logger.error(intLang('commands.lockdown._errors.lockdownPermissionsIneffective')+ ' [0026]'));
 
             // Check to see if the channels are already in Lockdown
             if (isSetPermissions.deny.has('CONNECT' && 'SEND_MESSAGES')) return category.updateOverwrite(message.guild.roles.everyone.id, {CONNECT: true, SEND_MESSAGES: true})
-                .then(() => message.react('✅'))
-                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOnline')))
+                .then(() => message.react('✅').catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0184]')))
+                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOnline')).catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0185]')))
                 .then(() => messageEmbedSend(client, responseChannel, false, intLang('commands.lockdown.lockdownMessage.embedMessageOnline.title'), intLang('commands.lockdown.lockdownMessage.embedMessageOnline.description')))
                 .then(() => dumpEvent.dumpCommand(client, message, 'black', `${this.name} 'Off'`))
                 .catch(() => logger.error(intLang('commands.lockdown._errors.lockdownPermissionsIneffective')+ ' [0027]'));
             
             // Check to see if the channels are NOT in Lockdown
             if (isSetPermissions.allow.has('CONNECT' && 'SEND_MESSAGES')) return category.updateOverwrite(message.guild.roles.everyone.id, {CONNECT: false, SEND_MESSAGES: false})
-                .then(() => message.react('✅'))
-                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOffline', discord.prefix)))
+                .then(() => message.react('✅').catch(() => logger.error(intLang('discord._errors.messageReactIneffective', message.channel.id)+ ' [0186]')))
+                .then(() => message.reply(intLang('commands.lockdown.lockdownMessage.success.lockdownReplyOffline', discord.prefix)).catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0187]')))
                 .then(() => messageEmbedSend(client, responseChannel, false, intLang('commands.lockdown.lockdownMessage.embedMessageOffline.title'), intLang('commands.lockdown.lockdownMessage.embedMessageOffline.description')))
                 .then(() => dumpEvent.dumpCommand(client, message, 'black', `${this.name} 'On'`))
                 .catch(() => logger.error(intLang('commands.lockdown._errors.lockdownPermissionsIneffective')+ ' [0028]'));

@@ -104,7 +104,7 @@ module.exports = (client, oldState, newState) => {
         if (channel === null || channel.parent === null || channel.parent.id !== Guild.channels.category || channel.id === Guild.channels.voice) return;
 
         // NeDB VoiceChannels Removal
-        dbVoiceChannels.remove({id: channel.id, guild: guild.id}, {}, error => {
+        dbVoiceChannels.remove({ id: channel.id, guild: guild.id, channelOwner: oldState.member.id }, {}, error => {
             if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0110]');
             if (channel.members.array().length) return;
             

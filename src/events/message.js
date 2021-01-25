@@ -52,14 +52,17 @@ module.exports = (client, message) => {
             // Command Permission Verification
             if (command.adminOnly && !overRide) return message.reply(intLang('events.message._errors.adminPermissionInsufficient'))
                 .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0125]'));
+
             if (command.managerOnly && !overRide && !isManager) return message.reply(intLang('events.message._errors.managerPermissionInsufficient'))
                 .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0095]'));
+
             if (command.staffOnly && !overRide && !isStaff && !isManager) return message.reply(intLang('events.message._errors.staffPermissionInsufficient'))
                 .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0096]'));
 
             // Command Disabled Verification
             dbDisabledCommand.find({commandDisabled: commandName}, (error, result) => {
                 if (error) return logger.error(intLang('nedb._errors.DisableOrEnableFindIneffective', error)+ ' [0097]');
+                
                 if (result.length !== 0 && !overRide && !isManager) return message.reply(intLang('events.message._errors.commandDisabled'))
                     .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0098]'));
 
