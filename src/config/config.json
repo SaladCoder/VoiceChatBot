@@ -12,6 +12,7 @@
 	},
 	"channelTemplate": {
 		"lockStatus": "false",
-		"channelSlots": 10
+		"channelSlots": 10,
+		"creationSlowDownSeconds": 20
 	}
 }

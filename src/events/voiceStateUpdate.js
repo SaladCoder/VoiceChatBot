@@ -1,7 +1,7 @@
 const {dbGuilds, dbVoiceChannels, dbNewMemberHelp} = require('../utilities/datastore');
 const {messageEmbedSend} = require('../utilities/utilities');
 const {dumpEvent} = require('../utilities/dumpEvent');
-const {discord} = require('../config/config');
+const {discord, channelTemplate} = require('../config/config');
 const logger = require('../config/logger');
 const intLang = require('../locale/language');
 const fs = require('fs');
@@ -47,51 +47,45 @@ module.exports = (client, oldState, newState) => {
                 });
             };
             
-            // Waits 0.500 seconds and checks if the user is still waiting for a voice channel
+            // If the Category has more than 49 channels in it, we return, we can only have 50 channels per category
+            if (channelCategory.children.size > 49) return;
+
+            // Waits 1.000 seconds and checks if the user is still waiting for a voice channel
             setTimeout(async () => {
 
-                // voiceSlowDown for voice channel creations
-                if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) return;
-                else {
+                dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
+                    if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0128]');
 
-                    // voiceSlowDown add if member doesn't have one.
-                    await client.voiceSlowDown.delete(newState.member.id);
-                    await client.voiceSlowDown.set(newState.member.id, Date.now() + 20000); // 20 Seconds voicesSlowDown from voice creation
+                    // Checks if the member is in the "Join to Create Channel"
+                    waitMember = await guild.channels.cache.find(voice => Guild.channels.voice === voice.id).members.find(waitMember => waitMember.id === member.id);
+                    if (!waitMember) return;
 
-                    dbGuilds.findOne({id: newState.guild.id}, async (error, Guild) => {
-                        if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0128]');
+                    // Grab our config file for channel creation
+                    const configFile = JSON.parse(fs.readFileSync(`${__dirname}/../config/config.json`, 'utf8'));
 
-                        // Checks if the member is in the "Join to Create Channel"
-                        waitMember = await guild.channels.cache.find(voice => Guild.channels.voice === voice.id).members.find(waitMember => waitMember.id === member.id);
-                        if (!waitMember) return;
+                    // Voice Channel Creation
+                    const channelVoice = await guild.channels.create(intLang('discord.channels.voiceUser', member.user.username), {type: 'voice', parent: channelCategory, userLimit: configFile.channelTemplate.channelSlots, reason: intLang('events.voiceStateUpdate.channelVoiceReason', member.user.tag)})
+                        .catch(() => logger.error(intLang('discord._errors.channelCreateIneffective', member.voice.channel.id)+ ' [0107]'));
 
-                        // Grab our config file for channel creation
-                        const configFile = JSON.parse(fs.readFileSync(`${__dirname}/../config/config.json`, 'utf8'));
-
-                        // Voice Channel Creation
-                        const channelVoice = await guild.channels.create(intLang('discord.channels.voiceUser', member.user.username), {type: 'voice', parent: channelCategory, userLimit: configFile.channelTemplate.channelSlots, reason: intLang('events.voiceStateUpdate.channelVoiceReason', member.user.tag)})
-                            .catch(() => logger.error(intLang('discord._errors.channelCreateIneffective', member.voice.channel.id)+ ' [0107]'));
-
-                        // Set a lock on the channel if true is set in the config
-                        if (configFile.channelTemplate.lockStatus === 'true') channelVoice.updateOverwrite(guild.roles.everyone.id, {CONNECT: false});
-                        
-                        // Member Voice Channel Movement
-                        member.voice.setChannel(channelVoice)
-                            .catch(() =>  {
-                                logger.info(intLang('discord._errors.channelMoveIneffective', member.id)+ ' [0108]');
-                                channelVoice.delete();
-                            });
-
-                        // Log our new channel creation to the Dump channel [If opt-in for]
-                        dumpEvent.dumpChannel(client, newState, 'green', 'Channel Creation');
-
-                        // NeDB VoiceChannels Insertion
-                        dbVoiceChannels.insert({id: channelVoice.id, guild: guild.id, channelOwner: member.id}, error => {
-                            if (error) return logger.error(intLang('nedb._errors.voiceChannelsInsertIneffective', error)+ ' [0109]');
+                    // Set a lock on the channel if true is set in the config
+                    if (configFile.channelTemplate.lockStatus === 'true') channelVoice.updateOverwrite(guild.roles.everyone.id, {CONNECT: false});
+                    
+                    // Member Voice Channel Movement
+                    member.voice.setChannel(channelVoice)
+                        .catch(() =>  {
+                            logger.info(intLang('discord._errors.channelMoveIneffective', member.id)+ ' [0108]');
+                            channelVoice.delete();
                         });
+
+                    // Log our new channel creation to the Dump channel [If opt-in for]
+                    dumpEvent.dumpChannel(client, newState, 'green', 'Channel Creation');
+
+                    // NeDB VoiceChannels Insertion
+                    dbVoiceChannels.insert({id: channelVoice.id, guild: guild.id, channelOwner: member.id}, error => {
+                        if (error) return logger.error(intLang('nedb._errors.voiceChannelsInsertIneffective', error)+ ' [0109]');
                     });
-                }
-            }, 500);
+                });
+            }, 1000);
         });
     };
 
@@ -117,6 +111,19 @@ module.exports = (client, oldState, newState) => {
         });
     };
 
+    async function voiceSlowDownCheck(Guild) {
+
+        // voiceSlowDown for voice channel creations
+        if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) return;
+        else {
+
+            // voiceSlowDown add if member doesn't have one.
+            await client.voiceSlowDown.delete(newState.member.id);
+            await client.voiceSlowDown.set(newState.member.id, Date.now() + channelTemplate.creationSlowDownSeconds * 1000); // 20 Seconds voicesSlowDown from voice creation
+            return createVoiceChannel(Guild);
+        }
+    }
+
     function newMemberHelp() {
         dbNewMemberHelp.findOne({ memberID: newState.member.id }, (error, result) => {
             if (error) return logger.error(intLang('nedb._errors.newMemberHelpFindOneIneffective', error)+ ' [0130]');
@@ -136,7 +143,7 @@ module.exports = (client, oldState, newState) => {
         // Member joins "Create a channel" Voice Channel
         if (newState.channelID === Guild.channels.voice) {
             newMemberHelp();
-            return createVoiceChannel(Guild);
+            return voiceSlowDownCheck(Guild);
         }
 
         // Member leaves Voice Channel
