@@ -23,7 +23,9 @@
         "clear": {
             "voiceDelete": {
                 "deleteChannelReason": "%s removed all vacant voice channels.",
-                "deleteChannelCount": "I have removed %s channel(s) that were vacant."
+                "deleteChannelCount": "I have removed %s channel(s) that were vacant.",
+                "deleteCategoryReason": "%s removed all vacant OverFlow category's.",
+                "deleteCategoryCount": "I have removed %s category(s) that were vacant."
             }
         },
         "credits": {
@@ -371,8 +373,11 @@
     "discord": {
         "_errors": {
             "channelCreateIneffective": "Unable to create channel: %s",
+            "categoryCreateIneffective": "Unable to create category",
             "channelDeleteIneffective": "Unable to delete channel: %s",
+            "categoryDeleteIneffective": "Unable to delete category: %s",
             "channelFetchIneffective": "Unable to fetch a channel: %s",
+            "categoryFetchIneffective": "Unable to fetch a category: %s",
             "channelKickIneffective": "Unable to kick member from channel: %s",
             "channelPermitIneffective": "Unable to permit member to channel: %s",
             "channelUpdateOverwriteIneffective": "Unable to update channel: %s",
@@ -387,6 +392,7 @@
         },
         "channels": {
             "category": "Voice Channel Creation",
+            "categoryOverFlow": "Voice Channel OverFlow",
             "text": "commands",
             "voice": "Join to Create Channel",
             "voiceUser": "%s's channel"
