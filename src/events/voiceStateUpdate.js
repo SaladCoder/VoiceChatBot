@@ -13,13 +13,16 @@ module.exports = (client, oldState, newState) => {
     if (oldState.channelID === null && newState.channelID !== null) dumpEvent.dumpJoinAndLeave(client, newState, 'green', 'Connect');
     if (oldState.channelID !== null && newState.channelID === null) dumpEvent.dumpJoinAndLeave(client, oldState, 'red', 'Disconnect');
 
-    async function createVoiceChannel(mainGuild, overFlowData, voiceChannelData) {
+    async function requestVoiceChannelCreation(mainGuild, overFlowData, voiceChannelData) {
         const guild = newState.guild;
         const member = newState.member;
         const channelCategory = (!overFlowData) ? await guild.channels.cache.get(mainGuild.channels.category) : await guild.channels.cache.get(overFlowData.channels.category);
 
         // If the member had a previous Channel, return, this prevents some funky stuff happening
-        if (voiceChannelData) return requestVoiceChannelDeletion(mainGuild, false);
+        if (voiceChannelData) return requestVoiceChannelRelinquish(mainGuild, voiceChannelData);
+
+        // If the member left a previous Channel from an overflow category, more funky stuff prevention >:F
+        if (oldState.channelID) requestDataAllOverFlow(mainGuild);
 
         // voiceSlowDown for voice channel creations
         if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) return;
@@ -85,23 +88,50 @@ module.exports = (client, oldState, newState) => {
         });
     }
 
-    // requestVoiceChannelDeletion is called when someone leaves a voice channel, or is requested by another function
-    function requestVoiceChannelDeletion(mainGuild, stateType) {
-        const memberState = (stateType) ? newState : oldState;
-
-        if (memberState.channel === null || memberState.channel.id === null || memberState.channel.id === mainGuild.channels.voice) return;
-        if (memberState.channel.members.array().length) return;
+    // This function serves to remove the previous channel owner and remove the database entry when they create a new channel
+    async function requestVoiceChannelRelinquish(mainGuild, voiceChannelData) {
+        const oldChannel = await newState.guild.channels.cache.get(voiceChannelData.id);
 
         // NeDB VoiceChannels Removal
-        dbVoiceChannels.remove({ id: memberState.channel.id, guild: memberState.guild.id }, {}, async (error, removeCount) => {
-            if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0237]');
+        dbVoiceChannels.remove({ guild: newState.guild.id, channelOwner: newState.member.id }, {}, async (error, removeCount) => {
+            if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0260]');
+            if (!oldChannel || oldChannel.members.array().length) return;
 
             // Voice Channel Deletion
-            if (removeCount) await memberState.channel.delete()
-                .then(removedChannel => requestOverFlowCategoryDeletion(mainGuild, stateType, removedChannel))
+            if (removeCount) await oldChannel.delete()
+                .then(removedChannel => requestOverFlowCategoryDeletion(mainGuild, false, removedChannel))
                 .then(() => dumpEvent.dumpChannel(client, oldState, 'red', 'Channel Removed', 'Empty'))
-                .catch(() => logger.info(intLang('discord._errors.channelDeleteIneffective', memberState.channelID)+ ' [0238]'));
+                .catch(() => logger.info(intLang('discord._errors.channelDeleteIneffective', newState.channelID)+ ' [0261]'));
         });
+    }
+
+    // requestVoiceChannelDeletion is called when someone leaves a voice channel and is handle solely by requestDataAllOverFlow function
+    async function requestVoiceChannelDeletion(mainGuild, overFlowData) {
+
+        if (oldState.channel === null || oldState.channel.parent === null || oldState.channel.parent.id === null || oldState.channel.id === null || oldState.channel.id === mainGuild.channels.voice || oldState.channel.members.array().length) return;
+        if (oldState.channel.parent.id === mainGuild.channels.category) return requestVoiceChannelDeletionInternal();
+
+        if (overFlowData.length) {
+            for (let i = 0; i < overFlowData.length; i++) {
+                const channelParentCheck = await newState.guild.channels.cache.get(overFlowData[i].channels.category);
+                if (channelParentCheck.id === oldState.channel.parent.id) return requestVoiceChannelDeletionInternal();
+            }
+        }
+
+        // Dependent on the outer function requestVoiceChannelDeletion determines if this function removes the channel or not
+        function requestVoiceChannelDeletionInternal() {
+
+            // NeDB VoiceChannels Removal
+            dbVoiceChannels.remove({ id: oldState.channel.id, guild: oldState.guild.id }, {}, async error => {
+                if (error) return logger.error(intLang('nedb._errors.voiceChannelsRemoveIneffective', error)+ ' [0262]');
+
+                // Voice Channel Deletion
+                await oldState.channel.delete()
+                    .then(removedChannel => requestOverFlowCategoryDeletion(mainGuild, false, removedChannel))
+                    .then(() => dumpEvent.dumpChannel(client, oldState, 'red', 'Channel Removed', 'Empty'))
+                    .catch(() => logger.info(intLang('discord._errors.channelDeleteIneffective', oldState.channelID)+ ' [0263]'));
+            });
+        }
     }
 
     // This request is handled via requestVoiceChannelDeletion function
@@ -133,7 +163,7 @@ module.exports = (client, oldState, newState) => {
         dbGuilds.insert({ type: 'OVERFLOW', channels: { category: overFlowCategory.id, text: mainGuild.channels.text, voice: mainGuild.channels.voice } }, (error, insertedOverFlowCategory) => {
             if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0242]');
             dumpEvent.dumpChannel(client, oldState, 'red', 'OverFlow Category Creation', 'User Input');
-            return createVoiceChannel(mainGuild, insertedOverFlowCategory, voiceChannelData);
+            return requestVoiceChannelCreation(mainGuild, insertedOverFlowCategory, voiceChannelData);
         });
     }
 
@@ -142,14 +172,14 @@ module.exports = (client, oldState, newState) => {
         dbVoiceChannels.findOne({ guild: newState.guild.id, channelOwner: newState.member.id }, (error, voiceChannelData) => {
             if (error) return logger.error(intLang('nedb._errors.voiceChannelsFindOneIneffective', error)+ ' [0243]');
 
-            if (overFlowData === null) return createVoiceChannel(mainGuild, null, voiceChannelData);
-            else return createVoiceChannel(mainGuild, overFlowData, voiceChannelData);
+            if (overFlowData === null) return requestVoiceChannelCreation(mainGuild, null, voiceChannelData);
+            else return requestVoiceChannelCreation(mainGuild, overFlowData, voiceChannelData);
         });
     }
 
-    // Called if an OverFlow category is requested for createVoiceChannel function
+    // Called if an OverFlow category is requested for requestVoiceChannelCreation function
     // This function serves to find any previous created OverFlow categories
-    // If one is available, send that back to createVoiceChannel function
+    // If one is available, send that back to requestVoiceChannelCreation function
     // else it will requestOverFlowCategory for a new one to be made.
     function requestDataOverFlow(mainGuild, voiceChannelData) {
         dbGuilds.find({ type: 'OVERFLOW' }, async (error, overFlowData) => {
@@ -158,10 +188,18 @@ module.exports = (client, oldState, newState) => {
 
             for(let i = 0; i < overFlowData.length; i++) {
                 const overFlowCategoryCheck = await newState.guild.channels.cache.get(overFlowData[i].channels.category);
-                if (overFlowCategoryCheck.children.size < 30) return createVoiceChannel(mainGuild, overFlowData[i], voiceChannelData);
+                if (overFlowCategoryCheck.children.size < 30) return requestVoiceChannelCreation(mainGuild, overFlowData[i], voiceChannelData);
                 if (overFlowData.length < 2) return requestOverFlowCategory(mainGuild, voiceChannelData);
                 else return;
             }
+        });
+    }
+
+    // Retrieves any and all overFlow categories for the requestVoiceChannelDeletion function
+    function requestDataAllOverFlow(mainGuild) {
+        dbGuilds.find({ type: 'OVERFLOW' }, async (error, overFlowData) => {
+            if (error) return logger.error(intLang('nedb._errors.guildsFindOneIneffective', error)+ ' [0264]');
+            return requestVoiceChannelDeletion(mainGuild, overFlowData);
         });
     }
 
@@ -191,7 +229,7 @@ module.exports = (client, oldState, newState) => {
 
         // Member leaves Voice Channel
         if (oldState.channelID) {
-            return requestVoiceChannelDeletion(mainGuild, false);
+            return requestDataAllOverFlow(mainGuild);
         }
     });
 };
