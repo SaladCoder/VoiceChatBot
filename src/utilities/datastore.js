@@ -7,7 +7,10 @@ const dbStaffRoles = new Datastore({filename: './data/staffRoles.db', autoload: 
 const dbNewMemberHelp = new Datastore({filename: './data/dbNewMemberHelp.db', autoload: true});
 const dbDisabledCommand = new Datastore({filename: './data/disabledCommand.db', autoload: true});
 
-// Auto compactions of dbVoiceChannels Database file, every 10 Mins
+// Auto compaction of dbGuilds Database file, every 1 Hour
+dbGuilds.persistence.setAutocompactionInterval(3600000);
+
+// Auto compaction of dbVoiceChannels Database file, every 10 Mins
 dbVoiceChannels.persistence.setAutocompactionInterval(600000);
 
 // Datastore Module
