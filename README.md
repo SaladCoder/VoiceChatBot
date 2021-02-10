@@ -35,12 +35,12 @@ This bot also accepts Discord ID's as well as @Mentions when calling certain com
 | Name | Commands | Description |
 | ---- | -------- | ----------- |
 | **Setup** | `$setup` | Setup the Discord bot to run on your server. [If you have already setup your server, this command will act as a repair function] |
-| **Manager** | `$manager <add/remove> <@Mention>` | Add or Remove a bot manager. [This also grants channel immunity, preventing members from kicking this Role/Member] |
+| **Manager** | `$manager <add/remove> <@Role>` | Add or Remove a bot manager. [This also grants channel immunity, preventing members from kicking this Role/Member] |
 
 ### Manager Commands
 | Name | Commands | Description |
 | ---- | -------- | ----------- |
-| **Staff** | `$staff <add/remove> <@Mention>` | Add or Remove a staff member. [This also grants channel immunity, preventing members from kicking this Role/Member] |
+| **Staff** | `$staff <add/remove> <@Role>` | Add or Remove a staff member. [This also grants channel immunity, preventing members from kicking this Role/Member] |
 | **Lockdown** | `$lockdown` | Toggles the Voice System from being unavailable to available. |
 | **Command** | `$command <disable/enable> <CommandName>` | Disable or Enable a command. (This does not effect a manager or the administrator global permission). |
 | **Set Command Channel** | `$setcommandchannel <optional: remove> <@ChannelID>` | Set a new command channel for accepting Bot commands. |

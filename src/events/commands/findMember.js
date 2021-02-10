@@ -5,7 +5,7 @@ const {dumpEvent} = require('../../utilities/dumpEvent');
 // Command Module
 module.exports = {
     name: 'find',
-    description: 'Find a member in any Voice channel and return there current channel',
+    description: 'Find a member in any Voice channel and return their current channel',
     allowDisable: true,
     arguments: true,
     staffOnly: true,

@@ -13,6 +13,13 @@ dbGuilds.persistence.setAutocompactionInterval(3600000);
 // Auto compaction of dbVoiceChannels Database file, every 10 Mins
 dbVoiceChannels.persistence.setAutocompactionInterval(600000);
 
+// Ensure indexing
+dbVoiceChannels.ensureIndex({ fieldName: 'id', unique: true }, function (err) {
+});
+
+dbVoiceChannels.ensureIndex({ fieldName: 'channelOwner', unique: true }, function (err) {
+});
+
 // Datastore Module
 module.exports = {
 

@@ -90,8 +90,8 @@ module.exports = {
                 
                 // We check to see if a channel has been removed and take action if it has
                 if(removeCount > 0) {
-                    message.reply(intLang('commands.clear.voiceDelete.deleteCategoryCount', removeCount)
-                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0257]')));
+                    message.reply(intLang('commands.clear.voiceDelete.deleteCategoryCount', removeCount))
+                        .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0257]'));
                 }
             }).catch(error => logger.error(intLang('discord._errors.channelRemovePromiseReturnIneffective', error)+ ' [0259]'));
         }

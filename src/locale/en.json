@@ -156,24 +156,18 @@
         },
         "manager": {
             "_errors": {
-                "invalidMemberOrRole": "mention a member or role in the server to add as a Bot Manager!",
-                "isStaffMember": "member is already a Staff member!\nPlease use `%sstaff <remove> <@Mention>` and `%smanager <add> <@Mention>` to add their new rank.",
+                "invalidRole": "mention a role in the server to add as a Bot Manager!",
                 "isStaffRole": "role is already added as Staff!\nPlease use `%sstaff <remove> <@Role>` and `%smanager <add> <@Role>` to add this Role.",
-                "isStaffRemoveMember": "member is already added as a Staff member!\nPlease use `%sstaff <remove> <@Mention>` to remove this member.",
                 "isStaffRemoveRole": "role is already added as Staff!\nPlease use `%sstaff <remove> <@Role>` to remove this Role.",
                 "invalidPermissions": "only the server owner or someone with the administrator permission can perform that action.",
                 "firstOption": "you did not specify a valid first option. Try `%smanager <add/remove> <@Mention>`."
             },
             "add": {
-                "addBotManagerIneffective": "unable to add <@%s> as a Bot manager, this member is already a Bot Manager!\n(If you're trying to remove this member, try using `%smanager <remove> <@Mention>`)",
                 "addRoleBotManagerIneffective": "unable to add <@&%s> Role as a Bot manager, this Role is already a Bot Manager!\n(If you're trying to remove this Role, try using `%smanager <remove> <@Role>`)",
-                "successRole": "I have added <@&%s> Role as a Bot Manager.",
-                "successMember": "I have added <@%s> as a Bot Manager."
+                "successRole": "I have added <@&%s> Role as a Bot Manager."
             },
             "remove": {
-                "successMember": "I have removed <@%s> as a Bot Manager.",
                 "successRole": "I have removed Role <@&%s> as a Bot Manager.",
-                "removeBotManagerIneffective": "unable to remove <@%s> as a Bot manager, this member is not registered as a Bot Manager!",
                 "removeBotManagerRoleIneffective": "unable to remove <@&%s> Role from Bot manager, this Role is not registered as a Bot Manager!"
             }
         },
@@ -195,24 +189,17 @@
         },
         "staff": {
             "_errors": {
-                "invalidMemberOrRole": "mention a member or role in the server!",
-                "isManagerMember": "member is already a Bot Manager!\nPlease use `%smanager <remove> <@Mention>` and `%sstaff <add> <@Mention>` to add their new rank.",
+                "invalidRole": "mention a role in the server!",
                 "isManagerRole": "role is already added as a Bot Manager!\nPlease use `%smanager <remove> <@Role>` and `%sstaff <add> <@Role>` to add this Role.",
-                "isManagerRemoveMember": "member is already added as a Bot Manager!\nPlease use `%smanager <remove> <@Mention>` to remove this member.",
                 "isManagerRemoveRole": "role is already added as a Bot Manager!\nPlease use `%smanager <remove> <@Role>` to remove this Role.",
-                "selfMember": "you cannot add/remove yourself as a Staff member.",
                 "firstOption": "you did not specify a valid first option. Try `%sstaff <add/remove> <@Mention>`."
             },
             "add": {
-                "addStaffIneffective": "unable to add <@%s> as a Staff member, this member is already a Staff member!\n(If you're trying to remove this member, try using `%sstaff <remove> <@Mention>`)",
                 "addRoleStaffIneffective": "unable to add <@&%s> Role as Staff, this Role is already added as Staff!\n(If you're trying to remove this Role, try using `%sstaff <remove> <@Role>`)",
-                "successRole": "I have added <@&%s> Role as Staff.",
-                "successMember": "I have added <@%s> as a Staff member."
+                "successRole": "I have added <@&%s> Role as Staff."
             },
             "remove": {
-                "successMember": "I have removed <@%s> as a Staff member.",
                 "successRole": "I have removed <@&%s> Role as Staff.",
-                "removeStaffIneffective": "unable to remove <@%s> from Staff, this member is not registered as a Staff member!",
                 "removeStaffRoleIneffective": "unable to remove <@&%s> Role from Staff, this Role is not registered as Staff!"
             }
         },
@@ -423,9 +410,10 @@
         },
         "voiceStateUpdate": {
             "channelVoiceReason": "%s created a voice channel",
+            "voiceSlowDownMessage": "Hey! You're currently on a **Cooldown** from making voice channels! You have %s *Seconds* remaining!",
             "embedNewMemberMessage": {
                 "title": "Hello! I'm excited to see you're using our new Voice Channel System!",
-                "description": "Keep in mind that this system is in an beta state, and if you run into any issues, please message a member of staff on the server.\n\n**What is this?**\n**-** Use this system to automatically create your own voice channel - the system will also move you into said voice channel.\n**-** If you don't want to create a voice channel, feel free to join other member created voice channels. Have fun!\n\n**How to manage a channel**\nBy default, you are only allowed to type commands in the provided #commands text channel (This is located directly above the \"Join to Create Channel\")\n\nIn order to kick a member from your channel, use the command:\n\n%skick [@Mention]\n\nFor example: %skick @Huskies\n\nFor further command assistance type: %shelp\n\nAlso keep in mind that there is a 20 second cool-down for creating a voice channel. This is to avoid abuse of the voice system.\n\n*Please note that any commands can be disabled by a member of staff, and they reserve the right to disable any commands and deny access to this system without notice.*"
+                "description": "Keep in mind that this system is in an beta state, and if you run into any issues, please message a member of staff on the server.\n\n**What is this?**\n**-** Use this system to automatically create your own voice channel - the system will also move you into said voice channel.\n**-** If you don't want to create a voice channel, feel free to join other member created voice channels. Have fun!\n\n**How to manage a channel**\nBy default, you are only allowed to type commands in the provided #commands text channel (This is located directly above the \"Join to Create Channel\")\n\nIn order to kick a member from your channel, use the command:\n\n%seject [@Mention]\n\nFor example: %seject @Huskies\n\nFor further command assistance type: %shelp\n\nAlso keep in mind that there is a 20 second cool-down for creating a voice channel. This is to avoid abuse of the voice system.\n\n*Please note that any commands can be disabled by a member of staff, and they reserve the right to disable any commands and deny access to this system without notice.*"
             }
         }
     },

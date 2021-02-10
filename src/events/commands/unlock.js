@@ -10,7 +10,7 @@ module.exports = {
     description: 'Unlocks your voice channel that allows everyone to join.',
     allowDisable: true,
     cooldown: 10,
-    async execute(client, message) {
+    execute(client, message) {
 
         // NeDB VoiceChannels Query
         dbVoiceChannels.findOne({id: message.member.voice.channelID, guild: message.guild.id}, async (error, VoiceChannel) => {
@@ -25,7 +25,6 @@ module.exports = {
 
             // We do a check to see if the channel is already unlocked, and if so, return
             const isUnlocked = message.member.voice.channel.permissionOverwrites.get(message.guild.roles.everyone.id);
-
             if (typeof isUnlocked !== 'undefined' && isUnlocked.allow.has('CONNECT')) return message.reply(intLang('commands.unlock._errors.isUnlocked', discord.prefix))
                 .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0158]'));
 

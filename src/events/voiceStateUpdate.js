@@ -23,9 +23,15 @@ module.exports = (client, oldState, newState) => {
 
         // If the member left a previous Channel from an overflow category, more funky stuff prevention >:F
         if (oldState.channelID) requestDataAllOverFlow(mainGuild);
-
+        
         // voiceSlowDown for voice channel creations
-        if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) return;
+        if (await client.voiceSlowDown.has(newState.member.id) && Date.now() < client.voiceSlowDown.get(newState.member.id)) {
+            if (!newState.member.user.dmChannel) return await newState.member.send(intLang('events.voiceStateUpdate.voiceSlowDownMessage', ~~((client.voiceSlowDown.get(newState.member.id) - Date.now()) / 1000)));
+            else if (Date.now() > newState.member.user.dmChannel.lastMessage.createdTimestamp + 30000) {
+                return await newState.member.send(intLang('events.voiceStateUpdate.voiceSlowDownMessage', ~~((client.voiceSlowDown.get(newState.member.id) - Date.now()) / 1000)));
+            }
+            return;
+        }
         else {
 
             // If our mainGuild Category is full, return to function requestDataOverFlow for a new category
@@ -138,7 +144,7 @@ module.exports = (client, oldState, newState) => {
     function requestOverFlowCategoryDeletion(mainGuild, stateType, removedChannel) {
         const memberState = (stateType) ? newState : oldState;
 
-        if (removedChannel === null || removedChannel.id === null || removedChannel.parent === null || removedChannel.parent.id === null || removedChannel.id === mainGuild.channels.category) return;
+        if (removedChannel === null || removedChannel.id === null || removedChannel.parent === null || removedChannel.parent.id === null || removedChannel.parent.id === mainGuild.channels.category) return;
         if (removedChannel.members.array().length) return;
 
         dbGuilds.findOne({ type: 'OVERFLOW', "channels.category": removedChannel.parent.id }, async (error, overFlowData) => {
@@ -150,7 +156,6 @@ module.exports = (client, oldState, newState) => {
                 .then(() => dumpEvent.dumpChannel(client, oldState, 'red', 'OverFlow Category Removed', 'Empty'))
                 .catch(() => logger.info(intLang('discord._errors.categoryDeleteIneffective', overFlowCategory.id)+ ' [0240]'));
         });
-
     }
 
     // If a category is required and the mainGuild category is full, we make a new one.
