@@ -1,11 +1,12 @@
+const path = require('path');
 const Datastore = require('nedb');
 
 // NeDB Datastore Collections
-const dbGuilds = new Datastore({filename: './data/guilds.db', autoload: true});
-const dbVoiceChannels = new Datastore({filename: './data/voiceChannels.db', autoload: true});
-const dbStaffRoles = new Datastore({filename: './data/staffRoles.db', autoload: true});
-const dbNewMemberHelp = new Datastore({filename: './data/dbNewMemberHelp.db', autoload: true});
-const dbDisabledCommand = new Datastore({filename: './data/disabledCommand.db', autoload: true});
+const dbGuilds = new Datastore({filename: path.join(__dirname, '../..', 'data', 'guilds.db'), autoload: true});
+const dbVoiceChannels = new Datastore({filename: path.join(__dirname, '../..', 'data', 'voiceChannels.db'), autoload: true});
+const dbStaffRoles = new Datastore({filename: path.join(__dirname, '../..', 'data', 'staffRoles.db'), autoload: true});
+const dbNewMemberHelp = new Datastore({filename: path.join(__dirname, '../..', 'data', 'dbNewMemberHelp.db'), autoload: true});
+const dbDisabledCommand = new Datastore({filename: path.join(__dirname, '../..', 'data', 'disabledCommand.db'), autoload: true});
 
 // Auto compaction of dbGuilds Database file, every 1 Hour
 dbGuilds.persistence.setAutocompactionInterval(3600000);

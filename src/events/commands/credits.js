@@ -1,6 +1,7 @@
-const {messageEmbedSend} = require('../../utilities/utilities');
-const intLang = require('../../locale/language');
-const {dumpEvent} = require('../../utilities/dumpEvent');
+const path = require('path');
+const intLang = require(path.join(__dirname, '../..', 'locale', 'language'));
+const {dumpEvent} = require(path.join(__dirname, '../..', 'utilities', 'dumpEvent'));
+const {messageEmbedSend} = require(path.join(__dirname, '../..', 'utilities', 'utilities'));
 
 // Command Module
 module.exports = {

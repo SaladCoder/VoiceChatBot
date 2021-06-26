@@ -94,6 +94,7 @@ Discord: [Mattizhu#1993](https://discord.com/users/209966957385089024)
 
 ## 🤓 Developer
 👤 **Huskies xD**
+Website: [HuskiesxD](https://www.huskiesxd.com/)
 Twitter: [@HuskiesxD](https://twitter.com/HuskiesxD)
 Github: [@AlexHuskiesMercer](https://github.com/AlexHuskiesMercer)
 Discord: [Huskies xD#6455](https://discord.com/users/213310816231882752)

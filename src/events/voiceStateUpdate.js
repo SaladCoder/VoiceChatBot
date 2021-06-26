@@ -1,10 +1,11 @@
-const {dbGuilds, dbVoiceChannels, dbNewMemberHelp} = require('../utilities/datastore');
-const {messageEmbedSend} = require('../utilities/utilities');
-const {dumpEvent} = require('../utilities/dumpEvent');
-const {discord, channelTemplate} = require('../config/config');
-const logger = require('../config/logger');
-const intLang = require('../locale/language');
 const fs = require('fs');
+const path = require('path');
+const logger = require(path.join(__dirname, '..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '..', 'locale', 'language'));
+const {discord, channelTemplate} = require(path.join(__dirname, '..', 'config', 'config'));
+const {dumpEvent} = require(path.join(__dirname, '..', 'utilities', 'dumpEvent'));
+const {messageEmbedSend} = require(path.join(__dirname, '..', 'utilities', 'utilities'));
+const {dbGuilds, dbVoiceChannels, dbNewMemberHelp} = require(path.join(__dirname, '..', 'utilities', 'datastore'));
 
 // Event Emitting
 module.exports = (client, oldState, newState) => {

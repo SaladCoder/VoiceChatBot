@@ -1,7 +1,8 @@
+const path = require('path');
 const {MessageEmbed} = require('discord.js');
-const logger = require('../config/logger');
-const intLang = require('../locale/language');
-const {discord} = require('../config/config');
+const logger = require(path.join(__dirname, '..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '..', 'locale', 'language'));
+const {discord} = require(path.join(__dirname, '..', 'config', 'config'));
 
 // Utilties Module
 module.exports = {

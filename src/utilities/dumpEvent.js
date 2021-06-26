@@ -1,19 +1,20 @@
-const logger = require('../config/logger');
-const intLang = require('../locale/language');
-const {MessageEmbed} = require('discord.js');
 const fs = require('fs');
+const path = require('path');
+const {MessageEmbed} = require('discord.js');
+const logger = require(path.join(__dirname, '..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '..', 'locale', 'language'));
 
 // Event Emitting
 module.exports = {
 
     // Start of our dump functions \o/ woo
     dumpEvent: {
-
+        
         // If opt-in for Channel log dump, then we log the creation and removing of voice channels
         dumpChannel: (client, arg, colour, type, reason) => {
             
             // Read our config file for the text channel set for dumping	            
-            fs.readFile(`${__dirname}../../config/config.json`, function readFileJson(error, dump) {
+            fs.readFile(path.join(__dirname, '..', 'config', 'config.json'), function readFileJson(error, dump) {
 
                 // Error Handle (╯°□°）╯︵ ┻━┻	
                 if (error) return logger.error(intLang('utilities._errors.dumpJoinAndLeave', error)+ ' [0113]');
@@ -75,7 +76,7 @@ module.exports = {
         dumpJoinAndLeave: (client, arg, colour, type) => {
 
             // Read our config file for the text channel set for dumping	            
-            fs.readFile(`${__dirname}../../config/config.json`, function readFileJson(error, dump) {
+            fs.readFile(path.join(__dirname, '..', 'config', 'config.json'), function readFileJson(error, dump) {
 
                 // Error Handle (╯°□°）╯︵ ┻━┻	
                 if (error) return logger.error(intLang('utilities._errors.dumpJoinAndLeave', error)+ ' [0116]');
@@ -136,7 +137,7 @@ module.exports = {
         dumpCommand: (client, arg, colour, command, member, role) => {
 
             // Read our config file for the text channel set for dumping	            
-            fs.readFile(`${__dirname}../../config/config.json`, function readFileJson(error, dump) {
+            fs.readFile(path.join(__dirname, '..', 'config', 'config.json'), function readFileJson(error, dump) {
 
                 // Error Handle (╯°□°）╯︵ ┻━┻	
                 if (error) return logger.error(intLang('utilities._errors.dumpJoinAndLeave', error)+ ' [0119]');

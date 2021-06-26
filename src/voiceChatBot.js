@@ -29,7 +29,7 @@
 const {Client, Collection} = require('discord.js');
 const client = new Client();
 const fs = require('fs');
-const {discord} = require('./config/config');
+const {discord} = require(`${__dirname}/config/config`);
 
 // Discord Native Collections
 client.commands = new Collection();

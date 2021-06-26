@@ -1,5 +1,6 @@
 const fs = require('fs');
-const {settings} = require('../config/config');
+const path = require('path');
+const {settings} = require(path.join(__dirname, '..', 'config', 'config'));
 
 // Language Locale Parser
 module.exports = function() {

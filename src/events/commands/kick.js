@@ -1,7 +1,8 @@
-const {dbVoiceChannels, dbStaffRoles} = require('../../utilities/datastore');
-const logger = require('../../config/logger');
-const intLang = require('../../locale/language');
-const {dumpEvent} = require('../../utilities/dumpEvent');
+const path = require('path');
+const logger = require(path.join(__dirname, '../..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '../..', 'locale', 'language'));
+const {dumpEvent} = require(path.join(__dirname, '../..', 'utilities', 'dumpEvent'));
+const {dbVoiceChannels, dbStaffRoles} = require(path.join(__dirname, '../..', 'utilities', 'datastore'));
 
 // Command Module
 module.exports = {

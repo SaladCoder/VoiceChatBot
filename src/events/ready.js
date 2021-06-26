@@ -1,5 +1,6 @@
-const logger = require('../config/logger');
-const intLang = require('../locale/language');
+const path = require('path');
+const logger = require(path.join(__dirname, '..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '..', 'locale', 'language'));
 
 // Event Emittion
 module.exports = client => {

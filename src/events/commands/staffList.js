@@ -1,7 +1,8 @@
-const {messageEmbedSend} = require('../../utilities/utilities');
-const intLang = require('../../locale/language');
-const {dbStaffRoles} = require('../../utilities/datastore');
-const logger = require('../../config/logger');
+const path = require('path');
+const logger = require(path.join(__dirname, '../..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '../..', 'locale', 'language'));
+const {messageEmbedSend} = require(path.join(__dirname, '../..', 'utilities', 'utilities'));
+const {dbStaffRoles} = require(path.join(__dirname, '../..', 'utilities', 'datastore'));
 
 // Command Module
 module.exports = {

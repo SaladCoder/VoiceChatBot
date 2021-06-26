@@ -1,8 +1,9 @@
+const path = require('path');
 const {Collection} = require('discord.js');
-const {dbGuilds, dbStaffRoles, dbDisabledCommand} = require('../utilities/datastore');
-const {discord} = require('../config/config');
-const intLang = require('../locale/language');
-const logger = require('../config/logger');
+const logger = require(path.join(__dirname, '..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '..', 'locale', 'language'));
+const {discord} = require(path.join(__dirname, '..', 'config', 'config'));
+const {dbGuilds, dbDisabledCommand, dbStaffRoles} = require(path.join(__dirname, '..', 'utilities', 'datastore'));
 
 // Event Emittion
 module.exports = (client, message) => {

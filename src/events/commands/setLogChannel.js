@@ -1,7 +1,8 @@
-const {discord} = require('../../config/config');
-const logger = require('../../config/logger');
-const intLang = require('../../locale/language');
 const fs = require('fs');
+const path = require('path');
+const logger = require(path.join(__dirname, '../..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '../..', 'locale', 'language'));
+const {discord} = require(path.join(__dirname, '../..', 'config', 'config'));
 
 // Command Module
 module.exports = {
@@ -27,7 +28,7 @@ module.exports = {
         const channel = message.guild.client.channels.cache.find(channel => channel.id === newLogChannel && channel.type === 'text');
 
         // Read our config file for the text channel set for dumping (Why does dumping sound rude to me <.<)
-        fs.readFile(`${__dirname}../../../config/config.json`, function readFileJson(error, dump) {
+        fs.readFile(path.join(__dirname, '../..', 'config', 'config.json'), function readFileJson(error, dump) {
 
             // Error Handle (╯°□°）╯︵ ┻━┻
             if (error) return logger.error(intLang('commands.setLogChannel._errors.unableToReadFile', error)+ ' [0055]');
@@ -58,7 +59,7 @@ module.exports = {
             }
 
             // Write to file our new Channel ID for the log dumps
-            fs.writeFile(`${__dirname}../../../config/config.json`, JSON.stringify(dump, null, "\t"), error => {	
+            fs.writeFile(path.join(__dirname, '../..', 'config', 'config.json'), JSON.stringify(dump, null, "\t"), error => {	
                 if (error) return logger.error(intLang('commands.setLogChannel.failed.unableToWriteFile', error)+ ' [0056]');
             });
 

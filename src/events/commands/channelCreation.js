@@ -1,7 +1,8 @@
-const {discord} = require('../../config/config');
-const logger = require('../../config/logger');
-const intLang = require('../../locale/language');
 const fs = require('fs');
+const path = require('path');
+const logger = require(path.join(__dirname, '../..', 'config', 'logger'));
+const intLang = require(path.join(__dirname, '../..', 'locale', 'language'));
+const {discord} = require(path.join(__dirname, '../..', 'config', 'config'));
 
 // Command Module
 module.exports = {
@@ -25,7 +26,7 @@ module.exports = {
             .catch(() => logger.error(intLang('discord._errors.messageIneffective', message.channel.id)+ ' [0213]'));
 
         // Load our Config file for later reading and writing
-        const configFile = JSON.parse(fs.readFileSync(`${__dirname}/../../config/config.json`, 'utf8'));
+        const configFile = JSON.parse(fs.readFileSync(path.join(__dirname, '../..', 'config', 'config.json'), 'utf8'));
 
         switch(type){
             case 'slots':
@@ -69,7 +70,7 @@ module.exports = {
         }
 
         // Write to file if any changes are accepted
-        fs.writeFile(`${__dirname}/../../config/config.json`, JSON.stringify(configFile, null, "\t"), error => {	
+        fs.writeFile(path.join(__dirname, '../..', 'config', 'config.json'), JSON.stringify(configFile, null, "\t"), error => {	
             if (error) return logger.error(intLang('commands.channelCreation.failed.unableToWriteFile', error)+ ' [0004]');
 
         // Give the appropriate response
